@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard - Health Monitor</title>
+    <link rel="stylesheet" href="doctor-styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>👨‍⚕️ Doctor Dashboard</h1>
+            <div class="patient-info">
+                <span id="patientName">Loading...</span>
+                <div class="live-indicator">
+                    <span class="status-dot"></span>
+                    <span>Live Updates</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="dashboard">
+            <!-- Health Alerts -->
+            <div class="alerts-section">
+                <h2>🚨 Recent Health Alerts</h2>
+                <div id="alertsContainer" class="alerts-container">
+                    <!-- Alerts will be populated here -->
+                </div>
+            </div>
+
+            <!-- Key Metrics -->
+            <div class="metrics-grid">
+                <div class="metric-card bp-card">
+                    <h3>Blood Pressure</h3>
+                    <div class="metric-value" id="currentBP">--/--</div>
+                    <div class="metric-trend" id="bpTrend">--</div>
+                    <div class="metric-status" id="bpStatus">--</div>
+                </div>
+                <div class="metric-card oxygen-card">
+                    <h3>Oxygen Level</h3>
+                    <div class="metric-value" id="currentO2">--%</div>
+                    <div class="metric-trend" id="o2Trend">--</div>
+                    <div class="metric-status" id="o2Status">--</div>
+                </div>
+                <div class="metric-card sugar-card">
+                    <h3>Blood Sugar</h3>
+                    <div class="metric-value" id="currentSugar">-- mg/dL</div>
+                    <div class="metric-trend" id="sugarTrend">--</div>
+                    <div class="metric-status" id="sugarStatus">--</div>
+                </div>
+                <div class="metric-card compliance-card">
+                    <h3>Compliance</h3>
+                    <div class="metric-value" id="compliance">--%</div>
+                    <div class="metric-trend" id="complianceTrend">--</div>
+                    <div class="metric-status">Daily tracking</div>
+                </div>
+            </div>
+
+            <!-- Clinical Insights -->
+            <div class="insights-section">
+                <h2>📊 Clinical Insights</h2>
+                <div class="insights-grid">
+                    <div class="insight-card">
+                        <h4>Recommendations</h4>
+                        <ul id="recommendationsList">
+                            <li>Loading recommendations...</li>
+                        </ul>
+                    </div>
+                    <div class="insight-card">
+                        <h4>Trends Analysis</h4>
+                        <div id="trendsAnalysis">
+                            <p>Analyzing patient data...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="charts-section">
+                <h2>📈 Vital Signs Trends</h2>
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <canvas id="bpChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="oxygenChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="sugarChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="complianceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Readings -->
+            <div class="readings-section">
+                <h2>📋 Recent Readings</h2>
+                <div class="table-container">
+                    <table id="readingsTable">
+                        <thead>
+                            <tr>
+                                <th>Date/Time</th>
+                                <th>BP</th>
+                                <th>O2</th>
+                                <th>Sugar</th>
+                                <th>Urine</th>
+                                <th>Alerts</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody id="readingsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Export Options -->
+            <div class="export-section">
+                <h2>📤 Export Data</h2>
+                <div class="export-buttons">
+                    <button onclick="exportToPDF()" class="export-btn">Export PDF Report</button>
+                    <button onclick="exportToCSV()" class="export-btn">Export CSV Data</button>
+                    <button onclick="generateSummary()" class="export-btn">Generate Summary</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="doctor-app.js"></script>
+</body>
+</html>

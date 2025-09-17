@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .form-group { margin: 10px 0; }
+        label { display: block; margin-bottom: 5px; }
+        input, select { padding: 8px; margin-bottom: 10px; width: 200px; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
+        .message { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>Health Monitor Test Form</h1>
+    
+    <form id="testForm">
+        <div class="form-group">
+            <label for="date">Date:</label>
+            <input type="date" id="date">
+        </div>
+        
+        <div class="form-group">
+            <label for="timeSlot">Time Slot:</label>
+            <select id="timeSlot">
+                <option value="">Select time</option>
+                <option value="morning">Morning</option>
+                <option value="afternoon">Afternoon</option>
+                <option value="evening">Evening</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="systolic">Systolic BP:</label>
+            <input type="number" id="systolic" placeholder="120">
+        </div>
+        
+        <div class="form-group">
+            <label for="diastolic">Diastolic BP:</label>
+            <input type="number" id="diastolic" placeholder="80">
+        </div>
+        
+        <button type="button" id="submitBtn">Test Submit</button>
+    </form>
+    
+    <div id="messages"></div>
+    <div id="results"></div>
+
+    <script>
+        // Set today's date
+        document.getElementById('date').value = new Date().toISOString().split('T')[0];
+        
+        function showMessage(message, type) {
+            const messagesDiv = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = message;
+            messagesDiv.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 5000);
+        }
+        
+        document.getElementById('submitBtn').addEventListener('click', async () => {
+            const formData = {
+                date: document.getElementById('date').value,
+                time_slot: document.getElementById('timeSlot').value,
+                systolic: parseInt(document.getElementById('systolic').value) || null,
+                diastolic: parseInt(document.getElementById('diastolic').value) || null,
+                oxygen_level: null,
+                blood_sugar: null,
+                urine_output: null,
+                notes: 'Test submission'
+            };
+            
+            console.log('Submitting:', formData);
+            
+            if (!formData.date || !formData.time_slot) {
+                showMessage('Please fill in date and time slot', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/vitals', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                console.log('Response:', result);
+                
+                if (response.ok) {
+                    showMessage('Success! Data submitted.', 'success');
+                    document.getElementById('results').innerHTML = `<pre>${JSON.stringify(result, null, 2)}</pre>`;
+                } else {
+                    showMessage(`Error: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('Network error. Is the server running?', 'error');
+            }
+        });
+        
+        // Test data loading
+        async function loadData() {
+            try {
+                const response = await fetch('/api/vitals?days=7');
+                const data = await response.json();
+                console.log('Loaded data:', data);
+                
+                const resultsDiv = document.getElementById('results');
+                resultsDiv.innerHTML += `<h3>Recent Data (${data.length} records):</h3>`;
+                resultsDiv.innerHTML += `<pre>${JSON.stringify(data.slice(0, 3), null, 2)}</pre>`;
+            } catch (error) {
+                console.error('Error loading data:', error);
+            }
+        }
+        
+        // Load data on page load
+        loadData();
+    </script>
+</body>
+</html>

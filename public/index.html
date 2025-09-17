@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Monitor Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏥 Health Monitor Dashboard</h1>
+            <p>Track your vital signs for better health management</p>
+            <div id="appStatus" style="color: #f39c12; font-size: 0.9rem;">Loading...</div>
+        </header>
+
+        <div class="dashboard">
+            <!-- Quick Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Today's Entries</h3>
+                    <div class="stat-value" id="todayEntries">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Latest BP</h3>
+                    <div class="stat-value" id="latestBP">--/--</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Latest O2</h3>
+                    <div class="stat-value" id="latestO2">--%</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Latest Sugar</h3>
+                    <div class="stat-value" id="latestSugar">-- mg/dL</div>
+                </div>
+            </div>
+
+            <!-- Data Entry Form -->
+            <div class="form-section">
+                <h2>Record New Vitals</h2>
+                <form id="vitalsForm" autocomplete="off">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="date">Date:</label>
+                            <input type="date" id="date">
+                        </div>
+                        <div class="form-group">
+                            <label for="timeSlot">Time Slot:</label>
+                            <select id="timeSlot">
+                                <option value="">Select time</option>
+                                <option value="morning">Morning</option>
+                                <option value="afternoon">Afternoon</option>
+                                <option value="evening">Evening</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="systolic">Systolic BP:</label>
+                            <input type="number" id="systolic" placeholder="120" min="70" max="200">
+                        </div>
+                        <div class="form-group">
+                            <label for="diastolic">Diastolic BP:</label>
+                            <input type="number" id="diastolic" placeholder="80" min="40" max="120">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="oxygenLevel">Oxygen Level (%):</label>
+                            <input type="number" id="oxygenLevel" placeholder="98" min="80" max="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="bloodSugar">Blood Sugar (mg/dL):</label>
+                            <input type="number" id="bloodSugar" placeholder="100" min="50" max="400">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="urineOutput">Urine Output (mL):</label>
+                            <input type="number" id="urineOutput" placeholder="300" min="0" max="2000">
+                        </div>
+                        <div class="form-group">
+                            <label for="notes">Notes:</label>
+                            <input type="text" id="notes" placeholder="Any observations...">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Record Vitals</button>
+                </form>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="charts-section">
+                <h2>Trends & Insights</h2>
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <canvas id="bpChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="oxygenChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="sugarChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="urineChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Health Insights -->
+            <div class="insights-section">
+                <h2>Health Insights & Recommendations</h2>
+                <div class="insights-container">
+                    <div class="insight-card">
+                        <h4>📊 Current Status</h4>
+                        <div id="healthStatus">Analyzing your data...</div>
+                    </div>
+                    <div class="insight-card">
+                        <h4>💡 Recommendations</h4>
+                        <ul id="recommendationsList">
+                            <li>Loading recommendations...</li>
+                        </ul>
+                    </div>
+                    <div class="insight-card">
+                        <h4>⚠️ Recent Alerts</h4>
+                        <div id="recentAlerts">No recent alerts</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Doctor Sharing -->
+            <div class="sharing-section">
+                <h2>👨‍⚕️ Share with Doctor</h2>
+                <div class="sharing-container">
+                    <div class="sharing-form">
+                        <div class="form-group">
+                            <label for="patientName">Your Name:</label>
+                            <input type="text" id="patientName" placeholder="Enter your full name">
+                        </div>
+                        <div class="form-group">
+                            <label for="doctorEmail">Doctor's Email:</label>
+                            <input type="email" id="doctorEmail" placeholder="doctor@hospital.com">
+                        </div>
+                        <button onclick="createSharingLink()" class="share-btn">Create Sharing Link</button>
+                    </div>
+                    <div id="sharingResult" class="sharing-result" style="display: none;">
+                        <h4>✅ Sharing Link Created!</h4>
+                        <div class="share-link-container">
+                            <input type="text" id="shareLink" readonly>
+                            <button onclick="copyShareLink()" class="copy-btn">Copy Link</button>
+                        </div>
+                        <div class="qr-container">
+                            <img id="qrCode" alt="QR Code for sharing">
+                            <p>Scan QR code or share the link with your doctor</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Entries -->
+            <div class="recent-section">
+                <h2>Recent Entries</h2>
+                <div class="table-container">
+                    <table id="recentTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>BP</th>
+                                <th>O2</th>
+                                <th>Sugar</th>
+                                <th>Urine</th>
+                                <th>Alerts</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
