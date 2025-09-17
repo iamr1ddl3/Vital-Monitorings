@@ -524,8 +524,6 @@ class HealthMonitor {
     }
 }
 
-}
-
 // Sharing functionality
 async function createSharingLink() {
     const patientName = document.getElementById('patientName').value;
